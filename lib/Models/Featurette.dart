@@ -16,7 +16,6 @@ class Featurette {
 
   factory Featurette.getDummy(){
     Featurette featured=Featurette();
-    featured.description="";
     featured.url="google.com";
     return featured;
   }

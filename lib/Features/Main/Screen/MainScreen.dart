@@ -170,7 +170,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                    alignment: Alignment.topCenter,
                    child: Container(
                      constraints: BoxConstraints(
-                         maxWidth: 800
+                         maxWidth: 1200
                      ),
                      margin: EdgeInsets.all(0),
                      child: TabBarView(

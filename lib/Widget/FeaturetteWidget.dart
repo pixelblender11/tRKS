@@ -15,18 +15,22 @@ class FeaturetteWidget extends StatelessWidget{
 
       },
       child: GlassConversion.defaultAsGlass(
-        Column(
-          children: [
-            AspectRatio(
-              aspectRatio: 4 / 5,
-              child: Image.memory(
-                featured.image!,
-                fit: BoxFit.fill,
-              ),
-            ),
-            if(featured.description.isNotEmpty)
-              Text(featured.description),
-          ],
+        LayoutBuilder(
+          builder: (context, size) {
+            return Column(
+              children: [
+                AspectRatio(
+                  aspectRatio: 4 / 5,
+                  child: Image.memory(
+                    featured.image!,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                if(featured.description.isNotEmpty)
+                  Text(featured.description),
+              ],
+            );
+          }
         ),
       ),
     );

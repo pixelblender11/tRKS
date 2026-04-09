@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:trks/Models/Models.dart';
 import 'package:trks/Widget/Widgets.dart';
 
+import '../Utilities/Utilities.dart';
+
 class SpotlightWidget extends StatelessWidget {
   final Spotlight spotlight;
 
@@ -9,60 +11,134 @@ class SpotlightWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, size) {
+        if(size.maxWidth >= 700){
+          return getHorizontalLayout(context);
+        }
+        else {
+          return getVerticalLayout(context);
+        }
+      }
+    );
+  }
+
+  Widget getHorizontalLayout(BuildContext context){
     return Row(
       mainAxisSize: MainAxisSize.min,
-      spacing: 10,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if(spotlight.image!=null && spotlight.leftImageAlign)
           Flexible(
             child: AspectRatio(
-              aspectRatio: 4 / 5,
-              child: Image.memory(
-                spotlight.image!,
-                fit: BoxFit.fill,
-              )
+                aspectRatio: 4 / 5,
+                child: Image.memory(
+                  spotlight.image!,
+                  fit: BoxFit.fill,
+                )
             ),
           ),
         Flexible(
-         child: Column(
-           mainAxisSize: MainAxisSize.min,
-           mainAxisAlignment: MainAxisAlignment.start,
-           crossAxisAlignment: CrossAxisAlignment.start,
-           children: [
-             Flexible(
-               child: Center(
-                 child: Text(
-                   spotlight.title,
-                   style: TextStyle(
-                     fontSize: 32
-                   ),
-                 )
-               )
-             ),
-             Flexible(child: Text(spotlight.description)),
-             if(spotlight.url.isNotEmpty)
-               Center(
-                 child: KSbutton(
-                   label: spotlight.buttonText,
-                   onPressed: () {
-                 
-                   }
-                 ),
-               )
-           ],
-         ),
+          child: Padding(
+            padding: const EdgeInsets.all(5),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                    child: Center(
+                        child: Text(
+                          spotlight.title,
+                          style: Styles.headerStyle,
+                        )
+                    )
+                ),
+                Flexible(
+                    child: Text(
+                      spotlight.description,
+                      style: Styles.bodyStyle,
+                    )
+                ),
+                if(spotlight.url.isNotEmpty)
+                  Align(
+                    alignment: AlignmentGeometry.bottomCenter,
+                    child: KSbutton(
+                        label: spotlight.buttonText,
+                        onPressed: () {
+
+                        }
+                    ),
+                  )
+              ],
+            ),
+          ),
         ),
         if(spotlight.image!=null && !spotlight.leftImageAlign)
           Flexible(
             child: AspectRatio(
+                aspectRatio: 4 / 5,
+                child: Image.memory(
+                  spotlight.image!,
+                  fit: BoxFit.fill,
+                )
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget getVerticalLayout(BuildContext context){
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Flexible(
+          child: AspectRatio(
               aspectRatio: 4 / 5,
               child: Image.memory(
                 spotlight.image!,
                 fit: BoxFit.fill,
               )
+          ),
+        ),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.all(5),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                    child: Center(
+                        child: Text(
+                          spotlight.title,
+                          style: Styles.headerStyle,
+                        )
+                    )
+                ),
+                Flexible(
+                    child: Text(
+                      spotlight.description,
+                      style: Styles.bodyStyle,
+                    )
+                ),
+                if(spotlight.url.isNotEmpty)
+                  Align(
+                    alignment: AlignmentGeometry.bottomCenter,
+                    child: KSbutton(
+                        label: spotlight.buttonText,
+                        onPressed: () {
+
+                        }
+                    ),
+                  )
+              ],
             ),
           ),
-     ],
+        ),
+      ],
     );
   }
 
