@@ -86,26 +86,6 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                             ),
                           ),
                         ),
-                        SizedBox(
-                          width: 75,
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              child: Text(
-                                "Bio",
-                                textAlign: TextAlign.right,
-                                style: index.value==1 ? TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: CustomColors.accentPink,
-                                    color: CustomColors.accentPink
-                                ) : null,
-                              ),
-                              onTap: () {
-                                index.value=1;
-                              }
-                            ),
-                          ),
-                        ),
                         GestureDetector(
                           onTap: () {},
                           child: Container(
@@ -136,26 +116,6 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                             ),
                           ),
                         ),
-                        SizedBox(
-                          width: 75,
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              child: Text(
-                                "Login",
-                                textAlign: TextAlign.left,
-                                style: index.value==3 ? TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: CustomColors.accentPink,
-                                    color: CustomColors.accentPink
-                                ) : null,
-                              ),
-                              onTap: () {
-                                index.value=3;
-                              }
-                            ),
-                          ),
-                        ),
                       ],
                     );
                   })
@@ -168,21 +128,51 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                 builder: (context, state) {
                  return Align(
                    alignment: Alignment.topCenter,
-                   child: Container(
-                     constraints: BoxConstraints(
-                         maxWidth: 1200
-                     ),
-                     margin: EdgeInsets.all(0),
-                     child: TabBarView(
-                       physics: const NeverScrollableScrollPhysics(),
-                       controller: tabController,
-                       children: [
-                         HomeWidget(),
-                         BioWidget(),
-                         HomeWidget(),
-                         HomeWidget()
-                       ],
-                     )
+                   child: TabBarView(
+                     physics: const NeverScrollableScrollPhysics(),
+                     controller: tabController,
+                     children: [
+                       SingleChildScrollView(
+                         child: Center(
+                           child: Container(
+                             constraints: BoxConstraints(
+                              maxWidth: 1200
+                             ),
+                             child: HomeWidget()
+                           ),
+                         ),
+                       ),
+                       SingleChildScrollView(
+                         child: Center(
+                           child: Container(
+                               constraints: BoxConstraints(
+                                   maxWidth: 1200
+                               ),
+                               child: BioWidget(),
+                           ),
+                         ),
+                       ),
+                       SingleChildScrollView(
+                         child: Center(
+                           child: Container(
+                               constraints: BoxConstraints(
+                                   maxWidth: 1200
+                               ),
+                               child: HomeWidget()
+                           ),
+                         ),
+                       ),
+                       SingleChildScrollView(
+                         child: Center(
+                           child: Container(
+                               constraints: BoxConstraints(
+                                   maxWidth: 1200
+                               ),
+                               child: HomeWidget()
+                           ),
+                         ),
+                       ),
+                     ],
                    ),
                  );
                 },

@@ -30,27 +30,19 @@ class _HomeWidgetState extends State<HomeWidget> {
       child: BlocConsumer<HomeCubit,HomeInitial>(
         listener: (context, state){},
         builder: (context, state) {
-          return LayoutBuilder(
-            builder: (context,constraints) {
-              return Scrollbar(
-                controller: ScrollController(),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "This is some title text about some random nonesense im sure!",
-                        textAlign: TextAlign.center,
-                        style: Styles.titleStyle,
-                      ),
-                      getCarousel(context, state),
-                      ...getSpotlights(),
-                      Footer(),
-                    ],
-                  ),
-                ),
-              );
-            }
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                //"Welcome to the Official World of Kendra Sunderland",
+                "Lerem Ipsum here is some text about the length",
+                textAlign: TextAlign.center,
+                style: Styles.titleStyle,
+              ),
+              getCarousel(context, state),
+              getSpotlights(context, state),
+              Footer(),
+            ],
           );
         },
       ),
@@ -58,72 +50,152 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   Widget getCarousel(BuildContext context,HomeInitial state){
-    return Row(
-      children: [
-        if(state.listFeaturettes.length > 3)
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: SizedBox(
-              width: 40,
-              height: 50,
-              child: IconButton(
-                icon: Icon(Icons.arrow_back), onPressed: () { _controller.previousPage(); },
-              ),
-            ),
-          ),
-        Flexible(
-          child: ExpandableCarousel(
-              items: state.listFeaturettes.where((x)=>x.image!=null).map((i) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Padding(
-                        padding: EdgeInsetsGeometry.fromLTRB(0, 0, 0, 25),
-                        child: FeaturetteWidget(featured: i)
-                    );
-                  },
-                );
-              }).toList(),
-              options: ExpandableCarouselOptions(
-                  controller: _controller,
-                  viewportFraction: 1/3,
-                  showIndicator: true,
-                  indicatorMargin: 10,
-                  slideIndicator: CircularWaveSlideIndicator(
-                      slideIndicatorOptions: SlideIndicatorOptions(
-                          indicatorBackgroundColor: Colors.pink
+    return LayoutBuilder(
+      builder: (context,size) {
+        if(size.maxWidth>1005){
+          return SizedBox(
+            width: 1005,
+            child: Row(
+              children: [
+                if(state.listFeaturettes.length > 3)
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: SizedBox(
+                      width: 40,
+                      height: 50,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back), onPressed: () { _controller.previousPage(); },
+                      ),
+                    ),
+                  ),
+                Flexible(
+                  child: ExpandableCarousel(
+                      items: state.listFeaturettes.where((x)=>x.image!=null).map((i) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Padding(
+                                padding: EdgeInsetsGeometry.fromLTRB(0, 0, 0, 25),
+                                child: FeaturetteWidget(featured: i)
+                            );
+                          },
+                        );
+                      }).toList(),
+                      options: ExpandableCarouselOptions(
+                          controller: _controller,
+                          aspectRatio: 4/5,
+                          viewportFraction: 1/3,
+                          showIndicator: true,
+                          indicatorMargin: 10,
+                          slideIndicator: CircularWaveSlideIndicator(
+                              slideIndicatorOptions: SlideIndicatorOptions(
+                                  indicatorBackgroundColor: Colors.pink
+                              )
+                          ),
+                          autoPlay: true,
+                          enableInfiniteScroll: true,
+                          enlargeCenterPage: true
                       )
                   ),
-                  autoPlay: true,
-                  enableInfiniteScroll: true,
-                  enlargeCenterPage: true
-              )
-          ),
-        ),
-        if(state.listFeaturettes.length > 3)
-          Align(
-            alignment: Alignment.bottomRight,
-            child: SizedBox(
-              width: 40,
-              height: 50,
-              child: IconButton(
-                icon: Icon(Icons.arrow_forward), onPressed: () { _controller.nextPage(); },
-              ),
+                ),
+                if(state.listFeaturettes.length > 3)
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: SizedBox(
+                      width: 40,
+                      height: 50,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_forward), onPressed: () { _controller.nextPage(); },
+                      ),
+                    ),
+                  ),
+              ],
             ),
+          );
+        }
+        return SizedBox(
+          child: Row(
+            children: [
+              if(state.listFeaturettes.length > 3)
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: SizedBox(
+                    width: 40,
+                    height: 50,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back), onPressed: () { _controller.previousPage(); },
+                    ),
+                  ),
+                ),
+              Flexible(
+                child: ExpandableCarousel(
+                    items: state.listFeaturettes.where((x)=>x.image!=null).map((i) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return Padding(
+                              padding: EdgeInsetsGeometry.fromLTRB(0, 0, 0, 25),
+                              child: FeaturetteWidget(featured: i)
+                          );
+                        },
+                      );
+                    }).toList(),
+                    options: ExpandableCarouselOptions(
+                        controller: _controller,
+                        aspectRatio: 4/5,
+                        viewportFraction: 1/1,
+                        showIndicator: true,
+                        indicatorMargin: 10,
+                        slideIndicator: CircularWaveSlideIndicator(
+                            slideIndicatorOptions: SlideIndicatorOptions(
+                                indicatorBackgroundColor: Colors.pink
+                            )
+                        ),
+                        autoPlay: true,
+                        enableInfiniteScroll: true,
+                        enlargeCenterPage: true
+                    )
+                ),
+              ),
+              if(state.listFeaturettes.length > 3)
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: SizedBox(
+                    width: 40,
+                    height: 50,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_forward), onPressed: () { _controller.nextPage(); },
+                    ),
+                  ),
+                ),
+            ],
           ),
-      ],
+        );
+      }
     );
   }
 
-  List<Widget> getSpotlights() {
+  Widget getSpotlights(BuildContext context,HomeInitial state) {
     List<Widget> listSpotlights=[];
     for(Spotlight spotlight in SpotlightRepository().listSpotlights){
       listSpotlights.add(
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0,5,0,5),
-          child: GlassConversion.defaultAsGlass(SpotlightWidget(spotlight: spotlight)),
+        GlassConversion.defaultAsGlass(
+          SpotlightWidget(spotlight: spotlight)
         )
       );
     }
-    return listSpotlights;
+    return LayoutBuilder(builder: (context, size){
+      if(size.maxWidth<=900){
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(40,5,40,5),
+          child: Column(
+            spacing: 25,
+            children: listSpotlights,
+          ),
+        );
+      }
+      return Column(
+        spacing: 25,
+        children: listSpotlights,
+      );
+    });
   }
 }

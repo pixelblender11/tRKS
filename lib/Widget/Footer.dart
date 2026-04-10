@@ -7,6 +7,7 @@ class Footer extends StatelessWidget{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
+      padding: EdgeInsetsGeometry.all(25),
       constraints: BoxConstraints(
         maxWidth: 600
       ),

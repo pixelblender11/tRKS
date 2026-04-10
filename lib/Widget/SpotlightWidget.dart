@@ -24,67 +24,73 @@ class SpotlightWidget extends StatelessWidget {
   }
 
   Widget getHorizontalLayout(BuildContext context){
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if(spotlight.image!=null && spotlight.leftImageAlign)
-          Flexible(
-            child: AspectRatio(
-                aspectRatio: 4 / 5,
-                child: Image.memory(
-                  spotlight.image!,
-                  fit: BoxFit.fill,
-                )
-            ),
-          ),
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.all(5),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                    child: Center(
-                        child: Text(
-                          spotlight.title,
-                          style: Styles.headerStyle,
-                        )
-                    )
-                ),
-                Flexible(
-                    child: Text(
-                      spotlight.description,
-                      style: Styles.bodyStyle,
-                    )
-                ),
-                if(spotlight.url.isNotEmpty)
-                  Align(
-                    alignment: AlignmentGeometry.bottomCenter,
-                    child: KSbutton(
-                        label: spotlight.buttonText,
-                        onPressed: () {
-
-                        }
-                    ),
+    return SizedBox(
+      width: 900,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if(spotlight.image!=null && spotlight.leftImageAlign)
+            Flexible(
+              flex: 5,
+              child: AspectRatio(
+                  aspectRatio: 4 / 5,
+                  child: Image.memory(
+                    spotlight.image!,
+                    fit: BoxFit.fill,
                   )
-              ],
+              ),
             ),
-          ),
-        ),
-        if(spotlight.image!=null && !spotlight.leftImageAlign)
           Flexible(
-            child: AspectRatio(
-                aspectRatio: 4 / 5,
-                child: Image.memory(
-                  spotlight.image!,
-                  fit: BoxFit.fill,
-                )
+            flex: 7,
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(
+                      child: Center(
+                          child: Text(
+                            spotlight.title,
+                            style: Styles.headerStyle,
+                          )
+                      )
+                  ),
+                  Flexible(
+                      child: Text(
+                        spotlight.description,
+                        style: Styles.bodyStyle,
+                      )
+                  ),
+                  if(spotlight.url.isNotEmpty)
+                    Align(
+                      alignment: AlignmentGeometry.bottomCenter,
+                      child: KSbutton(
+                          label: spotlight.buttonText,
+                          onPressed: () {
+
+                          }
+                      ),
+                    )
+                ],
+              ),
             ),
           ),
-      ],
+          if(spotlight.image!=null && !spotlight.leftImageAlign)
+            Flexible(
+              flex: 5,
+              child: AspectRatio(
+                  aspectRatio: 4 / 5,
+                  child: Image.memory(
+                    spotlight.image!,
+                    fit: BoxFit.fill,
+                  )
+              ),
+            ),
+        ],
+      ),
     );
   }
 
