@@ -4,8 +4,9 @@ import '../Models/Models.dart';
 
 class FeaturetteWidget extends StatelessWidget{
   final Featurette featured;
+  final double aspectRatio;
 
-  const FeaturetteWidget({super.key,required this.featured});
+  const FeaturetteWidget({super.key,required this.featured,this.aspectRatio=4/5});
 
   @override
   Widget build(BuildContext context) {
@@ -15,22 +16,20 @@ class FeaturetteWidget extends StatelessWidget{
 
       },
       child: GlassConversion.defaultAsGlass(
-        LayoutBuilder(
-          builder: (context, size) {
-            return Column(
-              children: [
-                AspectRatio(
-                  aspectRatio: 4 / 5,
-                  child: Image.memory(
-                    featured.image!,
-                    fit: BoxFit.fill,
-                  ),
+        GestureDetector(
+          child: Column(
+            children: [
+              AspectRatio(
+                aspectRatio: aspectRatio,
+                child: Image.memory(
+                  featured.image!,
+                  fit: BoxFit.cover,
                 ),
-                if(featured.description.isNotEmpty)
-                  Text(featured.description),
-              ],
-            );
-          }
+              ),
+              if(featured.description.isNotEmpty)
+                Text(featured.description),
+            ],
+          ),
         ),
       ),
     );

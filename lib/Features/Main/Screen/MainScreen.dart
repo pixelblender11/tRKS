@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trks/Features/Features.dart';
 import 'package:trks/Utilities/Utilities.dart';
@@ -28,7 +29,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   @override
   void initState(){
     super.initState();
-    tabController=TabController(length: 4, vsync: this);
+    tabController=TabController(length: 2, vsync: this);
     index.addListener(() {
       tabController.index=index.value;
     });
@@ -54,6 +55,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
       child: LayoutBuilder(
         builder: (context,constraints) {
           return Scaffold(
+            extendBodyBehindAppBar: true,
             backgroundColor: Colors.transparent,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
@@ -61,62 +63,114 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                 child: ValueListenableBuilder(
                   valueListenable: index,
                   builder: (context,value,child) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 75,
-                      children: [
-                        SizedBox(
-                          width: 75,
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              child: Text(
-                                "Home",
-                                textAlign: TextAlign.right,
-                                style: index.value==0 ? TextStyle(
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: CustomColors.accentPink,
-                                  color: CustomColors.accentPink
-                                ) : null,
+                    return SizedBox(
+                      width: 1100,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        spacing: 5,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: SizedBox(
+                              height: 47,
+                              width: 47,
+                              child: GlassConversion.defaultAsGlass(
+                                GestureDetector(
+                                  onTap: () {
+                                    index.value=0;
+                                  },
+                                  child: Container(
+                                    child: Image.asset(
+                                      'assets/images/kendra_seunderland_logox2.png',
+                                      fit: BoxFit.contain,
+                                      height: AppBar().preferredSize.height,
+                                    ),
+                                  ),
+                                  )
                               ),
-                              onTap: () {
-                                index.value=0;
-                                }
                             ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            child: Image.asset(
-                              'assets/images/kendra_seunderland_logox2.png',
-                              fit: BoxFit.contain,
-                              height: AppBar().preferredSize.height,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 75,
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              child: Text(
-                                "Shop",
-                                textAlign: TextAlign.left,
-                                style: index.value==2 ? TextStyle(
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: CustomColors.accentPink,
-                                  color: CustomColors.accentPink
-                                ) : null,
+                          if(index.value==1)
+                            Expanded(
+                              child: TextFormField(
+                                minLines: 1,
+                                decoration: InputDecoration(
+                                  hintText: 'Search...',
+                                  prefixIcon: Icon(Icons.search),
+                                  filled: true,
+                                  contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
                               ),
-                              onTap: () {
-                                index.value=2;
-                              }
                             ),
-                          ),
-                        ),
-                      ],
+                          if(index.value!=1)
+                            Flexible(child: Container()),
+                          SizedBox(
+                            width: 135,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: GlassConversion.defaultAsGlass(
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 45,
+                                      height: 45,
+                                      child: MouseRegion(
+                                        cursor: SystemMouseCursors.click,
+                                        child: GestureDetector(
+                                          child: Icon(
+                                            Icons.home_outlined,
+                                            color: index.value==0 ? CustomColors.accentPink : null,
+                                          ),
+                                          onTap: () {
+                                            index.value=0;
+                                          }
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 45,
+                                      height: 45,
+                                      child: MouseRegion(
+                                        cursor: SystemMouseCursors.click,
+                                        child: GestureDetector(
+                                          child: Icon(
+                                            Icons.shopping_bag_outlined,
+                                            color: index.value==1 ? CustomColors.accentPink : null,
+                                          ),
+                                          onTap: () {
+                                            index.value=1;
+                                          }
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 45,
+                                      height: 45,
+                                      child: MouseRegion(
+                                        cursor: SystemMouseCursors.click,
+                                        child: GestureDetector(
+                                          child: Icon(
+                                            Icons.shopping_cart_outlined,
+                                          ),
+                                          onTap: () {
+                                            //index.value=1;
+                                          }
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     );
                   })
               ),
@@ -135,8 +189,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                        SingleChildScrollView(
                          child: Center(
                            child: Container(
+                             padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
                              constraints: BoxConstraints(
-                              maxWidth: 1200
+                              maxWidth: 1600
                              ),
                              child: HomeWidget()
                            ),
@@ -145,30 +200,11 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                        SingleChildScrollView(
                          child: Center(
                            child: Container(
-                               constraints: BoxConstraints(
-                                   maxWidth: 1200
-                               ),
-                               child: BioWidget(),
-                           ),
-                         ),
-                       ),
-                       SingleChildScrollView(
-                         child: Center(
-                           child: Container(
-                               constraints: BoxConstraints(
-                                   maxWidth: 1200
-                               ),
-                               child: HomeWidget()
-                           ),
-                         ),
-                       ),
-                       SingleChildScrollView(
-                         child: Center(
-                           child: Container(
-                               constraints: BoxConstraints(
-                                   maxWidth: 1200
-                               ),
-                               child: HomeWidget()
+                             padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
+                             constraints: BoxConstraints(
+                                 maxWidth: 1200
+                             ),
+                             child: ShopWidget(),
                            ),
                          ),
                        ),

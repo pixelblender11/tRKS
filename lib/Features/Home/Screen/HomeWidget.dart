@@ -33,13 +33,12 @@ class _HomeWidgetState extends State<HomeWidget> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                //"Welcome to the Official World of Kendra Sunderland",
-                "Lerem Ipsum here is some text about the length",
-                textAlign: TextAlign.center,
-                style: Styles.titleStyle,
-              ),
               getCarousel(context, state),
+              Text(
+                "Welcome to the official shop of Kendra Sunderland. This is the only place to shop for merch, fan gear, and other items.",
+                textAlign: TextAlign.center,
+                style: Styles.bodyStyle,
+              ),
               getSpotlights(context, state),
               Footer(),
             ],
@@ -52,9 +51,9 @@ class _HomeWidgetState extends State<HomeWidget> {
   Widget getCarousel(BuildContext context,HomeInitial state){
     return LayoutBuilder(
       builder: (context,size) {
-        if(size.maxWidth>1005){
+        if(size.maxWidth>780){
           return SizedBox(
-            width: 1005,
+            width: 1210,
             child: Row(
               children: [
                 if(state.listFeaturettes.length > 3)
@@ -69,32 +68,37 @@ class _HomeWidgetState extends State<HomeWidget> {
                     ),
                   ),
                 Flexible(
-                  child: ExpandableCarousel(
-                      items: state.listFeaturettes.where((x)=>x.image!=null).map((i) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return Padding(
-                                padding: EdgeInsetsGeometry.fromLTRB(0, 0, 0, 25),
-                                child: FeaturetteWidget(featured: i)
+                  child: Column(
+                    children: [
+                      ExpandableCarousel(
+                          items: state.listFeaturettes.where((x)=>x.image!=null).map((i) {
+                            return Builder(
+                              builder: (BuildContext context) {
+                                return Padding(
+                                    padding: EdgeInsetsGeometry.fromLTRB(0, 0, 0, 25),
+                                    child: FeaturetteWidget(featured: i)
+                                );
+                              },
                             );
-                          },
-                        );
-                      }).toList(),
-                      options: ExpandableCarouselOptions(
-                          controller: _controller,
-                          aspectRatio: 4/5,
-                          viewportFraction: 1/3,
-                          showIndicator: true,
-                          indicatorMargin: 10,
-                          slideIndicator: CircularWaveSlideIndicator(
-                              slideIndicatorOptions: SlideIndicatorOptions(
-                                  indicatorBackgroundColor: Colors.pink
-                              )
-                          ),
-                          autoPlay: true,
-                          enableInfiniteScroll: true,
-                          enlargeCenterPage: true
-                      )
+                          }).toList(),
+                          options: ExpandableCarouselOptions(
+                              controller: _controller,
+                              aspectRatio: 4/5,
+                              viewportFraction: 1/3,
+                              showIndicator: true,
+                              indicatorMargin: 10,
+                              slideIndicator: CircularWaveSlideIndicator(
+                                  slideIndicatorOptions: SlideIndicatorOptions(
+                                    indicatorBackgroundColor: CustomColors.accentPink,
+                                    currentIndicatorColor: CustomColors.primaryPink,
+                                  )
+                              ),
+                              autoPlay: true,
+                              enableInfiniteScroll: true,
+                              enlargeCenterPage: true
+                          )
+                      ),
+                    ],
                   ),
                 ),
                 if(state.listFeaturettes.length > 3)
@@ -115,19 +119,10 @@ class _HomeWidgetState extends State<HomeWidget> {
         return SizedBox(
           child: Row(
             children: [
-              if(state.listFeaturettes.length > 3)
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: SizedBox(
-                    width: 40,
-                    height: 50,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back), onPressed: () { _controller.previousPage(); },
-                    ),
-                  ),
-                ),
               Flexible(
-                child: ExpandableCarousel(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(40, 25, 40, 25),
+                  child: ExpandableCarousel(
                     items: state.listFeaturettes.where((x)=>x.image!=null).map((i) {
                       return Builder(
                         builder: (BuildContext context) {
@@ -138,34 +133,24 @@ class _HomeWidgetState extends State<HomeWidget> {
                         },
                       );
                     }).toList(),
-                    options: ExpandableCarouselOptions(
-                        controller: _controller,
-                        aspectRatio: 4/5,
-                        viewportFraction: 1/1,
-                        showIndicator: true,
-                        indicatorMargin: 10,
-                        slideIndicator: CircularWaveSlideIndicator(
-                            slideIndicatorOptions: SlideIndicatorOptions(
-                                indicatorBackgroundColor: Colors.pink
-                            )
-                        ),
-                        autoPlay: true,
-                        enableInfiniteScroll: true,
-                        enlargeCenterPage: true
+                  options: ExpandableCarouselOptions(
+                      controller: _controller,
+                      aspectRatio: 4/5,
+                      viewportFraction: 1/1,
+                      showIndicator: true,
+                      indicatorMargin: 10,
+                      slideIndicator: CircularWaveSlideIndicator(
+                        slideIndicatorOptions: SlideIndicatorOptions(
+                          indicatorBackgroundColor: Colors.pink
+                        )
+                      ),
+                      autoPlay: true,
+                      enableInfiniteScroll: true,
+                      enlargeCenterPage: true
                     )
-                ),
-              ),
-              if(state.listFeaturettes.length > 3)
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: SizedBox(
-                    width: 40,
-                    height: 50,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_forward), onPressed: () { _controller.nextPage(); },
-                    ),
                   ),
                 ),
+              ),
             ],
           ),
         );
@@ -183,18 +168,12 @@ class _HomeWidgetState extends State<HomeWidget> {
       );
     }
     return LayoutBuilder(builder: (context, size){
-      if(size.maxWidth<=900){
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(40,5,40,5),
-          child: Column(
-            spacing: 25,
-            children: listSpotlights,
-          ),
-        );
-      }
-      return Column(
-        spacing: 25,
-        children: listSpotlights,
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(40,5,40,5),
+        child: Column(
+          spacing: 25,
+          children: listSpotlights,
+        ),
       );
     });
   }

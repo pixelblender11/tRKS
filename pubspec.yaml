@@ -41,6 +41,7 @@ dependencies:
   glass: ^2.0.0+2
   flutter_carousel_widget: ^3.1.0
   google_fonts: ^8.0.2
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  json_serializable: ^6.13.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -69,9 +71,11 @@ flutter:
     - assets/images/ks_disclaimer.png
     - assets/images/kendra_seunderland_logox2.png
     - assets/images/kendra-bg1.jpg
-    - assets/images/pizza1.jpg
-    - assets/images/pizza2.jpg
-    - assets/images/pizza3.jpg
+    - assets/images/KS1.jpg
+    - assets/images/KS2.jpg
+    - assets/images/KS3.jpg
+    - assets/images/KS4.jpg
+    - assets/images/KS5.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

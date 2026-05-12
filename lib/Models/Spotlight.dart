@@ -22,8 +22,8 @@ class Spotlight {
 
   factory Spotlight.getDummy(){
     Spotlight spotlight=Spotlight();
-    spotlight.title="Here is some title text about pizza";
-    spotlight.description="Pizza is kinda bomb. Like peporoni slices, with cheese!? On BREAD?! Seriously dude. Heeeeeell Yeah. Pizza is the best food invention known to man, dont you know? You can even mix and match toppings! Get a side of garlic knots and call it fat city. Amirite home skillet? I know im right, dont answer that.";
+    spotlight.title="This is the title of a spotlight item";
+    spotlight.description="The sun dipped low behind the hills, casting long shadows across the quiet street. A gentle breeze stirred the leaves, carrying with it the faint scent of rain. Somewhere in the distance, a door closed softly, and the world settled into a calm, expectant hush.";
     spotlight.url="google.com";
     spotlight.buttonText="Go now!";
     return spotlight;

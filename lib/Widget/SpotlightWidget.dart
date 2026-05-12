@@ -25,7 +25,7 @@ class SpotlightWidget extends StatelessWidget {
 
   Widget getHorizontalLayout(BuildContext context){
     return SizedBox(
-      width: 900,
+      width: 1100,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
