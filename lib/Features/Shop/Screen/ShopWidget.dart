@@ -8,7 +8,10 @@ import 'package:trks/Widget/Widgets.dart';
 import '../../../Models/Models.dart';
 
 class ShopWidget extends StatefulWidget {
-  const ShopWidget({super.key});
+  final TextEditingController searchBarController;
+  final ShopCubit cubit;
+
+  const ShopWidget({super.key, required this.cubit, required this.searchBarController});
 
   @override
   State<ShopWidget> createState() => _ShopWidgetState();
@@ -24,27 +27,24 @@ class _ShopWidgetState extends State<ShopWidget> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
 
-    return BlocProvider(
-      create: (context)=>ShopCubit(),
-      child: BlocConsumer<ShopCubit,ShopState>(
-        listener: (context, state){},
-        builder: (context, state) {
-          if(state is ShopInitial){
-            return Column(
-              children: [
-                getBanner(),
-                getFilters(context, state),
-                LayoutBuilder(builder: (context,size) {
-                  return getListProducts(context, state, size);
-                }),
-                getNextPreviousWidget(context, state),
-                Footer(),
-              ],
-            );
-          }
-          return Container();
-        },
-      ),
+    return BlocConsumer<ShopCubit,ShopState>(
+      listener: (context, state){},
+      builder: (context, state) {
+        if(state is ShopInitial){
+          return Column(
+            children: [
+              getBanner(),
+              getFilters(context, state),
+              LayoutBuilder(builder: (context,size) {
+                return getListProducts(context, state, size);
+              }),
+              getNextPreviousWidget(context, state),
+              Footer(),
+            ],
+          );
+        }
+        return Container();
+      },
     );
   }
 
@@ -84,7 +84,7 @@ class _ShopWidgetState extends State<ShopWidget> {
                   items: getDropDownCategoryItems(ItemCategoryRepository().listCategories),
                   value: ItemCategoryRepository().listCategories.firstWhere((x)=>x.key==state.categoryKey),
                   onChanged: (x) {
-                    BlocProvider.of<ShopCubit>(context).onCategoryOrSortSelected(x.key,state.orderBy);
+                    BlocProvider.of<ShopCubit>(context).onSearchOrFilter(widget.searchBarController.text,x.key,state.orderBy);
                   }
                 ),
               ],
@@ -98,7 +98,7 @@ class _ShopWidgetState extends State<ShopWidget> {
                   items: getDropDownSortItems(),
                   value: state.orderBy,
                   onChanged: (x) {
-                    BlocProvider.of<ShopCubit>(context).onCategoryOrSortSelected(state.categoryKey,x);
+                    BlocProvider.of<ShopCubit>(context).onSearchOrFilter(widget.searchBarController.text,state.categoryKey,x);
                   }
                 ),
               ],
@@ -131,7 +131,7 @@ class _ShopWidgetState extends State<ShopWidget> {
 
   Widget getListProducts(BuildContext context, ShopInitial state,BoxConstraints size){
     //No filters
-    if(state.categoryKey==-1){
+    if(state.categoryKey==-1 && widget.searchBarController.text.isEmpty){
       return SizedBox(
         width: 1100,
         child: Column(
@@ -201,7 +201,7 @@ class _ShopWidgetState extends State<ShopWidget> {
     List<Widget> retVal=[];
     for(ShopItem item in isMemorabilia?state.listMemorabiliaItems:state.listMerchItems.where((x)=>state.categoryKey==-1 || x.categoryKey.contains(state.categoryKey))){
       retVal.add(
-        ShopItemWidget(shopItem: item, constraints: size)
+        ShopItemWidget(key: ObjectKey(item), shopItem: item, constraints: size)
       );
     }
     return retVal;

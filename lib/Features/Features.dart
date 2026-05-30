@@ -6,3 +6,5 @@ export 'package:trks/Features/Home/Screen/HomeWidget.dart';
 export 'package:trks/Features/Home/Bloc/home_cubit.dart';
 export 'package:trks/Features/Shop/Screen/ShopWidget.dart';
 export 'package:trks/Features/Shop/Bloc/shop_cubit.dart';
+export 'package:trks/Features/Product/Screen/ProductScreen.dart';
+export 'package:trks/Features/Cart/Screen/cart_screen.dart';

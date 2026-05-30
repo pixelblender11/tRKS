@@ -22,7 +22,7 @@ class ShopCubit extends Cubit<ShopState> {
       )
   );
 
-  void onCategoryOrSortSelected(int categoryKey,SortBy sortBy){
+  Future onSearchOrFilter(String searchText, int categoryKey,SortBy sortBy) async {
     ShopItemRepository().listShopItems.sort(
         (a,b) {
           if(sortBy==SortBy.None){
@@ -42,7 +42,13 @@ class ShopCubit extends Cubit<ShopState> {
           }
         }
       );
-    var retVal=ShopItemRepository().listShopItems.where((x)=>x.categoryKey.contains(categoryKey))
+    var retVal=ShopItemRepository().listShopItems
+      .where(
+        (x) {
+          return (x.categoryKey.contains(categoryKey) || categoryKey==-1)
+              && (x.title.toLowerCase().contains(searchText.toLowerCase()) || searchText.isEmpty);
+        }
+      )
       .take(pageSize*pageIndex)
       .toList();
     emit(ShopInitial(

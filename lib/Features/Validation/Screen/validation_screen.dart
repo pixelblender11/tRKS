@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trks/Utilities/Utilities.dart';
 import 'package:trks/Features/Features.dart';
 import 'package:trks/Widget/Widgets.dart';
+import 'package:trks/main.dart';
 import 'package:web/web.dart' as web;
 
 class ValidationScreen extends StatefulWidget {
@@ -83,13 +84,7 @@ class _ValidationScreenState extends State<ValidationScreen> {
                                     KSbutton(
                                       onPressed: () async {
                                         await Initializer.init();
-                                        Navigator.pushAndRemoveUntil(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (BuildContext context) => const MainPage(title: '',)
-                                          ),
-                                          (Route<dynamic> route) => false, // This predicate ensures all previous routes are removed
-                                        );
+                                        router.pushReplacement("/home");
                                       },
                                       label: "I am over 18",
                                     ),

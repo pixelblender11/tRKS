@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trks/Features/Features.dart';
+import 'package:trks/Repositories/Repositories.dart';
 import 'package:trks/Utilities/Utilities.dart';
 
+import '../../../Models/Models.dart';
+
 class MainPage extends StatefulWidget {
+
   const MainPage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -24,7 +28,9 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin {
   late final TabController tabController;
+  final TextEditingController searchBarController=TextEditingController();
   final ValueNotifier<int> index=ValueNotifier(0);
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState(){
@@ -54,132 +60,189 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
       ),
       child: LayoutBuilder(
         builder: (context,constraints) {
-          return Scaffold(
-            extendBodyBehindAppBar: true,
-            backgroundColor: Colors.transparent,
-            appBar: AppBar(
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider<MainCubit>(
+                create: (BuildContext context) => MainCubit()..loadData(),
+              ),
+              BlocProvider<ShopCubit>(
+                create: (BuildContext context) => ShopCubit(),
+              ),
+            ],
+            child: Scaffold(
+              key: _scaffoldKey,
+              extendBodyBehindAppBar: true,
               backgroundColor: Colors.transparent,
-              title: Center(
-                child: ValueListenableBuilder(
-                  valueListenable: index,
-                  builder: (context,value,child) {
-                    return SizedBox(
-                      width: 1100,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        spacing: 5,
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: SizedBox(
-                              height: 47,
-                              width: 47,
-                              child: GlassConversion.defaultAsGlass(
-                                GestureDetector(
-                                  onTap: () {
-                                    index.value=0;
-                                  },
-                                  child: Container(
-                                    child: Image.asset(
-                                      'assets/images/kendra_seunderland_logox2.png',
-                                      fit: BoxFit.contain,
-                                      height: AppBar().preferredSize.height,
+              endDrawer: CartScreen(),
+              endDrawerEnableOpenDragGesture: false,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                automaticallyImplyActions: false,
+                title: Center(
+                  child: ValueListenableBuilder(
+                    valueListenable: index,
+                    builder: (context,value,child) {
+                      return SizedBox(
+                        width: 1100,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          spacing: 5,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: SizedBox(
+                                height: 47,
+                                width: 47,
+                                child: GlassConversion.defaultAsGlass(
+                                  GestureDetector(
+                                    onTap: () {
+                                      index.value=0;
+                                    },
+                                    child: Container(
+                                      child: Image.asset(
+                                        'assets/images/kendra_seunderland_logox2.png',
+                                        fit: BoxFit.contain,
+                                        height: AppBar().preferredSize.height,
+                                      ),
                                     ),
-                                  ),
-                                  )
-                              ),
-                            ),
-                          ),
-                          if(index.value==1)
-                            Expanded(
-                              child: TextFormField(
-                                minLines: 1,
-                                decoration: InputDecoration(
-                                  hintText: 'Search...',
-                                  prefixIcon: Icon(Icons.search),
-                                  filled: true,
-                                  contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                    borderSide: BorderSide.none,
-                                  ),
+                                    )
                                 ),
                               ),
                             ),
-                          if(index.value!=1)
-                            Flexible(child: Container()),
-                          SizedBox(
-                            width: 135,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: GlassConversion.defaultAsGlass(
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 45,
-                                      height: 45,
-                                      child: MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        child: GestureDetector(
-                                          child: Icon(
-                                            Icons.home_outlined,
-                                            color: index.value==0 ? CustomColors.accentPink : null,
+                            if(index.value==1)
+                              Expanded(
+                                child: TextFormField(
+                                  minLines: 1,
+                                  controller: searchBarController,
+                                  onFieldSubmitted: (value) {
+                                    BlocProvider.of<ShopCubit>(context).onSearchOrFilter(
+                                      value,
+                                      (BlocProvider.of<ShopCubit>(context).state as ShopInitial).categoryKey,
+                                      (BlocProvider.of<ShopCubit>(context).state as ShopInitial).orderBy
+                                    );
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Search...',
+                                    prefixIcon: Icon(Icons.search),
+                                    filled: true,
+                                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            if(index.value!=1)
+                              Flexible(child: Container()),
+                            SizedBox(
+                              width: 90,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: GlassConversion.defaultAsGlass(
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 45,
+                                        height: 45,
+                                        child: MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            child: Icon(
+                                              Icons.home_outlined,
+                                              color: index.value==0 ? CustomColors.accentPink : null,
+                                            ),
+                                            onTap: () {
+                                              index.value=0;
+                                            }
                                           ),
-                                          onTap: () {
-                                            index.value=0;
-                                          }
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: 45,
-                                      height: 45,
-                                      child: MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        child: GestureDetector(
-                                          child: Icon(
-                                            Icons.shopping_bag_outlined,
-                                            color: index.value==1 ? CustomColors.accentPink : null,
+                                      SizedBox(
+                                        width: 45,
+                                        height: 45,
+                                        child: MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            child: Icon(
+                                              Icons.shopping_bag_outlined,
+                                              color: index.value==1 ? CustomColors.accentPink : null,
+                                            ),
+                                            onTap: () {
+                                              index.value=1;
+                                            }
                                           ),
-                                          onTap: () {
-                                            index.value=1;
-                                          }
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: 45,
-                                      height: 45,
-                                      child: MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        child: GestureDetector(
-                                          child: Icon(
-                                            Icons.shopping_cart_outlined,
-                                          ),
-                                          onTap: () {
-                                            //index.value=1;
-                                          }
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
+                                    ],
+                                  )
+                                ),
                               ),
                             ),
-                          )
-                        ],
-                      ),
-                    );
-                  })
+                            GlassConversion.defaultAsGlass(
+                              ValueListenableBuilder(
+                                valueListenable: ShopItemRepository().listCartVN,
+                                builder: (context, value, child) {
+                                  return SizedBox(
+                                    width: 45,
+                                    height: 45,
+                                    child: MouseRegion(
+                                      cursor: SystemMouseCursors.click,
+                                      child: GestureDetector(
+                                        child: Stack(
+                                          children: [
+                                            Center(
+                                              child: Icon(
+                                                Icons.shopping_cart_outlined,
+                                              ),
+                                            ),
+                                            if(ShopItemRepository().listCart.isNotEmpty)
+                                              Positioned(
+                                                  top: 5,
+                                                  right: 5,
+                                                  child: Container(
+                                                    width: 13,
+                                                    height: 13,
+                                                    alignment: Alignment.center,
+                                                    decoration: const BoxDecoration(
+                                                      color: Colors.red,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Text(
+                                                      ShopItemRepository().listCart.length.toString(),
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 11.0,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  )
+                                              ),
+                                          ],
+                                        ),
+                                        onTap: () {
+                                          _scaffoldKey.currentState!.openEndDrawer();
+                                        }
+                                      ),
+                                    ),
+                                  );
+                                }
+                              )
+                            )
+                          ],
+                        ),
+                      );
+                    })
+                ),
               ),
-            ),
-            body: BlocProvider(
-              create: (context)=>MainCubit(),
-              child: BlocConsumer<MainCubit,MainState>(
+              body: BlocConsumer<MainCubit,MainState>(
                 listener: (context, state){},
                 builder: (context, state) {
+                  if(state is MainInitial){
+                    return CircularProgressIndicator();
+                  }
                  return Align(
                    alignment: Alignment.topCenter,
                    child: TabBarView(
@@ -204,7 +267,10 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                              constraints: BoxConstraints(
                                  maxWidth: 1200
                              ),
-                             child: ShopWidget(),
+                             child: ShopWidget(
+                               searchBarController:searchBarController,
+                               cubit: BlocProvider.of<ShopCubit>(context),
+                             ),
                            ),
                          ),
                        ),
@@ -212,9 +278,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                    ),
                  );
                 },
-              ),
-            )
-          );
+              )
+          ),
+);
         }
       ),
     );

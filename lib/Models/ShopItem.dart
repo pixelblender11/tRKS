@@ -12,7 +12,8 @@ class ShopItem{
   String tags="";
   double price=0;
   double discount=0;
-  int quantity=-1;
+  int qty=1;
+  int availableQty=-1;
   Uint8List? image;
   DateTime dateAdded=DateTime.now();
   List<int> categoryKey=[];
@@ -33,11 +34,13 @@ class ShopItem{
   ShopItem();
 
   ShopItem.getDummy({bool isMerch=false}){
-    pKey=Random().nextInt(99);
+    pKey=Random().nextInt(9999);
     description="Here is some dummy text explaining the details of a product. Products are interesting. Products are for selling. Buy the product now";
     price=Random().nextDouble()*256;
-    title="Product Title of a Thing";
+    var titleStuff=["Thing", "Stuff", "Item"];
+    title="Product Title of a ${titleStuff[Random().nextInt(9999)%3]}";
     categoryKey.add((Random().nextInt(9999)%3));
+    availableQty=Random().nextInt(9999)%10;
     if(!isMerch && !categoryKey.contains(0)){
       categoryKey.add(1);
     }

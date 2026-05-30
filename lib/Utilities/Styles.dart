@@ -17,6 +17,13 @@ class Styles {
       )
   );
 
+  static final TextStyle? smallHeaderStyle=GoogleFonts.boldonse(
+      fontSize: 20,
+      textStyle: TextStyle(
+          color: CustomColors.accentPink
+      )
+  );
+
   static final TextStyle? bodyStyle=GoogleFonts.roboto(
     fontSize: 18,
     fontWeight: FontWeight.w400

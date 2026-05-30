@@ -1,8 +1,10 @@
 import 'dart:math' as Math;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trks/Models/Models.dart';
 import 'package:trks/Widget/Widgets.dart';
+import 'package:trks/main.dart';
 
 import '../Utilities/Utilities.dart';
 
@@ -25,6 +27,9 @@ class ShopItemWidgetState extends State<ShopItemWidget>{
     }
     double height=width+150;
     return InkWell(
+      onTap: () async {
+        router.go('home/product/${widget.shopItem.pKey}');
+      },
       child: SizedBox(
         width: width,
         height: height,

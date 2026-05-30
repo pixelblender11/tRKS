@@ -1,7 +1,48 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trks/Features/Features.dart';
+import 'package:trks/Repositories/Repositories.dart';
+
+import 'Models/Models.dart';
+
+/// The route configuration.
+final GoRouter router = GoRouter(
+  initialLocation: '/',
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return const ValidationScreen(title: "");
+      },
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (BuildContext context, GoRouterState state) {
+        int i=0;
+        return const MainPage(title: "");
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: '/product/:id',
+          builder: (BuildContext context, GoRouterState state) {
+            int key=int.parse(state.pathParameters['id']!);
+            ShopItem item=ShopItemRepository().listShopItems.firstWhere((x)=>x.pKey==key);
+            return ProductScreen(shopItem: item);
+          },
+          onExit: (BuildContext context, GoRouterState state) async {
+            List<ShopItem> retVal=[];
+            retVal.addAll(ShopItemRepository().listCart.toList());
+            ShopItemRepository().listCartVN.value=retVal;
+            return true;
+          }
+        ),
+      ],
+    ),
+  ],
+);
+
 
 void main() {
   runApp(const MyApp());
@@ -13,8 +54,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
+      routerConfig: router,
       scrollBehavior: MaterialScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.mouse,
@@ -41,7 +83,6 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: .fromSeed(seedColor: Colors.pinkAccent),
       ),
-      home: const ValidationScreen(title: 'Flutter Demo Main Page'),
     );
   }
 }
