@@ -9,7 +9,7 @@ import '../../../Models/Models.dart';
 
 class MainPage extends StatefulWidget {
 
-  const MainPage({super.key, required this.title});
+  const MainPage({super.key, required this.title, this.searchText});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -21,6 +21,7 @@ class MainPage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+  final String? searchText;
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -28,14 +29,16 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin {
   late final TabController tabController;
-  final TextEditingController searchBarController=TextEditingController();
+  late final TextEditingController searchBarController;
   final ValueNotifier<int> index=ValueNotifier(0);
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey=GlobalKey<ScaffoldState>();
 
   @override
   void initState(){
     super.initState();
-    tabController=TabController(length: 2, vsync: this);
+    tabController=TabController(initialIndex: widget.searchText==null ? 0 : 1,length: 2, vsync: this);
+    index.value=widget.searchText==null ? 0 : 1;
+    searchBarController=TextEditingController(text: widget.searchText);
     index.addListener(() {
       tabController.index=index.value;
     });
@@ -66,7 +69,12 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                 create: (BuildContext context) => MainCubit()..loadData(),
               ),
               BlocProvider<ShopCubit>(
-                create: (BuildContext context) => ShopCubit(),
+                create: (BuildContext context) {
+                  if(widget.searchText!=null){
+                    return ShopCubit()..onSearchOrFilter(widget.searchText!, -1, SortBy.None);
+                  }
+                  return ShopCubit();
+                } ,
               ),
             ],
             child: Scaffold(
@@ -185,6 +193,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                               ValueListenableBuilder(
                                 valueListenable: ShopItemRepository().listCartVN,
                                 builder: (context, value, child) {
+                                  double quantity=ShopItemRepository().listCart.fold<double>(0, (sum,element)=>sum+(element.qty));
                                   return SizedBox(
                                     width: 45,
                                     height: 45,
@@ -211,7 +220,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                                                       shape: BoxShape.circle,
                                                     ),
                                                     child: Text(
-                                                      ShopItemRepository().listCart.length.toString(),
+                                                      quantity.toString(),
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 11.0,
@@ -280,7 +289,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                 },
               )
           ),
-);
+          );
         }
       ),
     );

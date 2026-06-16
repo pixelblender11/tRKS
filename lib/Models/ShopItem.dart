@@ -31,6 +31,14 @@ class ShopItem{
     return ItemCategoryRepository().listCategories.where((x)=>categoryKey.contains(x.key)).toList();
   }
 
+  List<String> get categorieStrings {
+    return ItemCategoryRepository()
+        .listCategories.where((x)=>categoryKey.contains(x.key))
+        .where((x)=>x.key!=0 && x.key!=1)
+        .map((x)=>x.description)
+        .toList();
+  }
+
   ShopItem();
 
   ShopItem.getDummy({bool isMerch=false}){

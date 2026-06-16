@@ -20,8 +20,11 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/home',
       builder: (BuildContext context, GoRouterState state) {
-        int i=0;
-        return const MainPage(title: "");
+        String? searchText = state.uri.queryParameters['searchText'];
+        if(searchText!=null){
+          return MainPage(key: Key(searchText),title: "",searchText: searchText);
+        }
+        return MainPage(title: "",searchText: searchText);
       },
       routes: <RouteBase>[
         GoRoute(

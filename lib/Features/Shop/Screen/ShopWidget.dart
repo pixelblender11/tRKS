@@ -79,27 +79,39 @@ class _ShopWidgetState extends State<ShopWidget> {
           children: [
             Row(
               children: [
-                Text("Category:"),
-                DropdownButton(
-                  items: getDropDownCategoryItems(ItemCategoryRepository().listCategories),
-                  value: ItemCategoryRepository().listCategories.firstWhere((x)=>x.key==state.categoryKey),
-                  onChanged: (x) {
-                    BlocProvider.of<ShopCubit>(context).onSearchOrFilter(widget.searchBarController.text,x.key,state.orderBy);
-                  }
+                Text(
+                  "Category:",
+                  style: Styles.bodyStyle,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5,0,0,0),
+                  child: DropdownButton(
+                    items: getDropDownCategoryItems(ItemCategoryRepository().listCategories),
+                    value: ItemCategoryRepository().listCategories.firstWhere((x)=>x.key==state.categoryKey),
+                    onChanged: (x) {
+                      BlocProvider.of<ShopCubit>(context).onSearchOrFilter(widget.searchBarController.text,x.key,state.orderBy);
+                    }
+                  ),
                 ),
               ],
             ),
             Spacer(),
             Row(
               children: [
-                Text("Sort by:"),
-                DropdownButton(
-                  hint: Text("Sort by"),
-                  items: getDropDownSortItems(),
-                  value: state.orderBy,
-                  onChanged: (x) {
-                    BlocProvider.of<ShopCubit>(context).onSearchOrFilter(widget.searchBarController.text,state.categoryKey,x);
-                  }
+                Text(
+                  "Sort by:",
+                  style: Styles.bodyStyle,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5,0,0,0),
+                  child: DropdownButton(
+                    hint: Text("Sort by"),
+                    items: getDropDownSortItems(),
+                    value: state.orderBy,
+                    onChanged: (x) {
+                      BlocProvider.of<ShopCubit>(context).onSearchOrFilter(widget.searchBarController.text,state.categoryKey,x);
+                    }
+                  ),
                 ),
               ],
             ),
@@ -131,43 +143,78 @@ class _ShopWidgetState extends State<ShopWidget> {
 
   Widget getListProducts(BuildContext context, ShopInitial state,BoxConstraints size){
     //No filters
-    if(state.categoryKey==-1 && widget.searchBarController.text.isEmpty){
+    if(state.categoryKey==-2 && widget.searchBarController.text.isEmpty){
       return SizedBox(
         width: 1100,
         child: Column(
           children: [
             Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12.5,5,5,5),
-                child: Text(
-                  "Memorabilia",
-                  textAlign: TextAlign.start,
-                  style: Styles.headerStyle,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(12.5,5,5,5),
+                      child: Text(
+                        "Memorabilia",
+                        textAlign: TextAlign.start,
+                        style: Styles.headerStyle,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      BlocProvider.of<ShopCubit>(context).onSearchOrFilter("",0,state.orderBy);
+                    },
+                    child: Text(
+                      "(View More)",
+                      textAlign: TextAlign.start,
+                      style: Styles.smallHeaderStyle,
+                    ),
+                  )
+                ],
               ),
             ),
             Wrap(
               spacing: 25,
               alignment: WrapAlignment.center,
-              children: getProducts(context,true,state,size),
+              children: getProductsSpotlight(context,true,state,size),
             ),
             Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12.5,5,5,5),
-                child: Text(
-                  "Merch",
-                  textAlign: TextAlign.start,
-                  style: Styles.headerStyle,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(12.5,5,5,5),
+                      child: Text(
+                        "Merch",
+                        textAlign: TextAlign.start,
+                        style: Styles.headerStyle,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      BlocProvider.of<ShopCubit>(context).onSearchOrFilter("",1,state.orderBy);
+                    },
+                    child: Text(
+                      "(View More)",
+                      textAlign: TextAlign.start,
+                      style: Styles.smallHeaderStyle,
+                    ),
+                  )
+                ],
               ),
             ),
             Wrap(
               spacing: 25,
               alignment: WrapAlignment.center,
-              children: getProducts(context,true,state,size),
+              children: getProductsSpotlight(context,false,state,size),
             ),
+
           ],
         ),
       );
@@ -190,18 +237,28 @@ class _ShopWidgetState extends State<ShopWidget> {
           Wrap(
             spacing: 25,
             alignment: WrapAlignment.center,
-            children: getProducts(context,false,state,size),
+            children: getProductsFiltered(context,state,size),
           ),
         ],
       ),
     );
   }
 
-  List<Widget> getProducts(BuildContext context, bool isMemorabilia,ShopInitial state,BoxConstraints size){
+  List<Widget> getProductsFiltered(BuildContext context,ShopInitial state,BoxConstraints size){
     List<Widget> retVal=[];
-    for(ShopItem item in isMemorabilia?state.listMemorabiliaItems:state.listMerchItems.where((x)=>state.categoryKey==-1 || x.categoryKey.contains(state.categoryKey))){
+    for(ShopItem item in state.listMerchItems.where((x)=>state.categoryKey==-1 || x.categoryKey.contains(state.categoryKey))){
       retVal.add(
         ShopItemWidget(key: ObjectKey(item), shopItem: item, constraints: size)
+      );
+    }
+    return retVal;
+  }
+
+  List<Widget> getProductsSpotlight(BuildContext context,bool isMemorabilia, ShopInitial state,BoxConstraints size){
+    List<Widget> retVal=[];
+    for(ShopItem item in isMemorabilia?state.listMemorabiliaItems.take(6):state.listMerchItems.take(6)){
+      retVal.add(
+          ShopItemWidget(key: ObjectKey(item), shopItem: item, constraints: size)
       );
     }
     return retVal;
@@ -211,22 +268,18 @@ class _ShopWidgetState extends State<ShopWidget> {
     if(state.totalIndexes<=1){
       return Container();//Return empty container since no content.
     }
-    return Center(
-      child: InkWell(
-        onTap: () {
-
-        },
-        child: Text(
-            "View More",
-            style: TextStyle(color: CustomColors.accentPink)
+    if(state.categoryKey==-2){
+      return Center(
+        child: InkWell(
+          onTap: () {
+            BlocProvider.of<ShopCubit>(context).onSearchOrFilter("",-1,state.orderBy);
+          },
+          child: Text(
+              "View All",
+              style: TextStyle(color: CustomColors.accentPink)
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget getNextPreviousWidget1(BuildContext context, ShopInitial state){
-    if(state.totalIndexes<=1){
-      return Container();//Return empty container since no content.
+      );
     }
     return Row(
       mainAxisSize: MainAxisSize.max,
@@ -238,8 +291,8 @@ class _ShopWidgetState extends State<ShopWidget> {
 
           },
           child: Text(
-            "<- Prev",
-            style: TextStyle(color: CustomColors.accentPink)
+              "<- Prev",
+              style: TextStyle(color: CustomColors.accentPink)
           ),
         ),
         ...getIndexes(context,state),

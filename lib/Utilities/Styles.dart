@@ -18,10 +18,16 @@ class Styles {
   );
 
   static final TextStyle? smallHeaderStyle=GoogleFonts.boldonse(
-      fontSize: 20,
+      fontSize: 22,
       textStyle: TextStyle(
           color: CustomColors.accentPink
       )
+      //fontWeight: FontWeight.w600
+  );
+
+  static final TextStyle? largeBodyStyle=GoogleFonts.roboto(
+      fontSize: 22,
+      fontWeight: FontWeight.w400
   );
 
   static final TextStyle? bodyStyle=GoogleFonts.roboto(

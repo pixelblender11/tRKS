@@ -8,6 +8,7 @@ import 'package:trks/Repositories/Repositories.dart';
 import 'package:trks/main.dart';
 import '../../../Utilities/Utilities.dart';
 import '../../../Widget/Widgets.dart';
+import '../../Features.dart';
 
 class ProductScreen extends StatefulWidget {
   final ShopItem shopItem;
@@ -19,10 +20,14 @@ class ProductScreen extends StatefulWidget {
 }
 
 class ProductScreenState extends State<ProductScreen>{
+  TextEditingController searchBarController=TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey=GlobalKey<ScaffoldState>();
+
   int quantity=1;
 
   @override void dispose() {
     ShopItemRepository().updateRecent(widget.shopItem);
+    searchBarController.dispose();
     super.dispose();
   }
 
@@ -38,9 +43,13 @@ class ProductScreenState extends State<ProductScreen>{
         color: CustomColors.backgroundPink
       ),
       child: Scaffold(
+        key: _scaffoldKey,
         extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
+        endDrawer: CartScreen(),
+        endDrawerEnableOpenDragGesture: false,
         appBar: AppBar(
+          automaticallyImplyActions: false, // Hides the default back button
           automaticallyImplyLeading: false, // Hides the default back button
           backgroundColor: Colors.transparent,
           title: Center(
@@ -76,13 +85,9 @@ class ProductScreenState extends State<ProductScreen>{
                   Expanded(
                     child: TextFormField(
                       minLines: 1,
-                      //controller: searchBarController,
+                      controller: searchBarController,
                       onFieldSubmitted: (value) {
-                        //BlocProvider.of<ShopCubit>(context).onSearchOrFilter(
-                        //    value,
-                        //    (BlocProvider.of<ShopCubit>(context).state as ShopInitial).categoryKey,
-                        //    (BlocProvider.of<ShopCubit>(context).state as ShopInitial).orderBy
-                        //);
+                        router.go('/home?searchText=${searchBarController.text}');
                       },
                       decoration: InputDecoration(
                         hintText: 'Search...',
@@ -100,46 +105,47 @@ class ProductScreenState extends State<ProductScreen>{
                     ValueListenableBuilder(
                       valueListenable: ShopItemRepository().listCartVN,
                       builder: (context, value, child) {
+                        double quantity=ShopItemRepository().listCart.fold<double>(0, (sum,element)=>sum+(element.qty));
                         return SizedBox(
                           width: 45,
                           height: 45,
                           child: MouseRegion(
                             cursor: SystemMouseCursors.click,
                             child: GestureDetector(
-                              child: Stack(
-                                children: [
-                                  Center(
-                                    child: Icon(
-                                      Icons.shopping_cart_outlined,
+                                child: Stack(
+                                  children: [
+                                    Center(
+                                      child: Icon(
+                                        Icons.shopping_cart_outlined,
+                                      ),
                                     ),
-                                  ),
-                                  if(ShopItemRepository().listCart.isNotEmpty)
-                                    Positioned(
-                                        top: 5,
-                                        right: 5,
-                                        child: Container(
-                                          width: 13,
-                                          height: 13,
-                                          alignment: Alignment.center,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.red,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Text(
-                                            ShopItemRepository().listCart.length.toString(),
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 11.0,
-                                              fontWeight: FontWeight.w500,
+                                    if(ShopItemRepository().listCart.isNotEmpty)
+                                      Positioned(
+                                          top: 5,
+                                          right: 5,
+                                          child: Container(
+                                            width: 13,
+                                            height: 13,
+                                            alignment: Alignment.center,
+                                            decoration: const BoxDecoration(
+                                              color: Colors.red,
+                                              shape: BoxShape.circle,
                                             ),
-                                          ),
-                                        )
-                                    ),
-                                ],
-                              ),
-                              onTap: () {
-                                //index.value=1;
-                              }
+                                            child: Text(
+                                              quantity.toString(),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 11.0,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          )
+                                      ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  _scaffoldKey.currentState!.openEndDrawer();
+                                }
                             ),
                           ),
                         );
@@ -228,6 +234,16 @@ class ProductScreenState extends State<ProductScreen>{
                                               style: Styles.bodyStyle,
                                             ),
                                           ),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(5,5,5,5),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                    "Categories: ${widget.shopItem.categorieStrings.join(', ')}"
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                           if(widget.shopItem.availableQty>0)
                                             Padding(
                                               padding: const EdgeInsets.fromLTRB(5,5,5,5),
@@ -245,6 +261,14 @@ class ProductScreenState extends State<ProductScreen>{
                                                       onQtyChanged: (val){
                                                         quantity=val;
                                                       },
+                                                      decoration: QtyDecorationProps(
+                                                          btnColor: CustomColors.accentPink,
+                                                          borderShape: BorderShapeBtn.circle,
+                                                          isBordered: false
+                                                      ),
+                                                      qtyFormProps: QtyFormProps(
+                                                        enableTyping: false,
+                                                      ),
                                                     ),
                                                   ),
                                                   Spacer(),
@@ -324,34 +348,53 @@ class ProductScreenState extends State<ProductScreen>{
                                       Padding(
                                         padding: const EdgeInsets.fromLTRB(5,5,5,5),
                                         child: Row(
-                                          mainAxisSize: MainAxisSize.max,
                                           children: [
-                                            Text("Quantity: "),
-                                            SizedBox(
-                                              width: 100,
-                                              child: InputQty(
-                                                maxVal: widget.shopItem.availableQty,
-                                                minVal: 1,
-                                                initVal: 1,
-                                                steps: 1,
-                                                onQtyChanged: (val){
-                                                  quantity=val;
-                                                },
-                                              ),
+                                            Text(
+                                                "Categories: ${widget.shopItem.categorieStrings.join(', ')}"
                                             ),
-                                            Spacer(),
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: KSbutton(
-                                                onPressed: () {
-                                                  BlocProvider.of<ProductCubit>(context).addItemToCart(widget.shopItem, quantity);
-                                                },
-                                                label: "Add to Cart",
-                                              ),
-                                            )
                                           ],
                                         ),
                                       ),
+                                      if(widget.shopItem.availableQty>0)
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(5,5,5,5),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Text("Quantity: "),
+                                              SizedBox(
+                                                width: 100,
+                                                child: InputQty(
+                                                  maxVal: widget.shopItem.availableQty,
+                                                  minVal: 1,
+                                                  initVal: 1,
+                                                  steps: 1,
+                                                  onQtyChanged: (val){
+                                                    quantity=val;
+                                                  },
+                                                  decoration: QtyDecorationProps(
+                                                      btnColor: CustomColors.accentPink,
+                                                      borderShape: BorderShapeBtn.circle,
+                                                      isBordered: false
+                                                  ),
+                                                  qtyFormProps: QtyFormProps(
+                                                    enableTyping: false,
+                                                  ),
+                                                ),
+                                              ),
+                                              Spacer(),
+                                              Align(
+                                                alignment: Alignment.centerRight,
+                                                child: KSbutton(
+                                                  onPressed: () {
+                                                    BlocProvider.of<ProductCubit>(context).addItemToCart(widget.shopItem, quantity);
+                                                  },
+                                                  label: "Add to Cart",
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
                                     ],
                                   ),
                                 ],

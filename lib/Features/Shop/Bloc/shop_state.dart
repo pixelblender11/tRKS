@@ -3,6 +3,8 @@ part of 'shop_cubit.dart';
 @immutable
 sealed class ShopState {}
 
+final class ShopLoading extends ShopState {}
+
 final class ShopInitial extends ShopState {
   final List<ShopItem> listMerchItems;
   final List<ShopItem> listMemorabiliaItems;
@@ -19,6 +21,6 @@ final class ShopInitial extends ShopState {
     required this.totalIndexes,
     required this.listItemCategory,
     this.orderBy=SortBy.None,
-    this.categoryKey=-1,
+    this.categoryKey=-2,
   });
 }

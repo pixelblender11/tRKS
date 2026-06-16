@@ -9,20 +9,30 @@ import '../../../Models/Models.dart';
 part 'shop_state.dart';
 
 class ShopCubit extends Cubit<ShopState> {
-  int pageSize=12;
-  int pageIndex=1;
+  static int pageSize=12;
+  static int pageIndex=1;
 
   ShopCubit() : super(
       ShopInitial(
-          listMerchItems: ShopItemRepository().listShopItems.where((x)=>x.categoryKey.contains(1)).take(12).toList(),
+          listMerchItems: ShopItemRepository().listShopItems.where((x)=>x.categoryKey.contains(1)).take(pageSize).toList(),
           listMemorabiliaItems: ShopItemRepository().listShopItems.where((x)=>!x.categoryKey.contains(1)).toList(),
           index: 1,
-          totalIndexes: (ShopItemRepository().listShopItems.length/12).ceil(),
+          totalIndexes: (ShopItemRepository().listShopItems.length/pageSize).ceil(),
           listItemCategory: ItemCategoryRepository().listCategories,
       )
   );
 
   Future onSearchOrFilter(String searchText, int categoryKey,SortBy sortBy) async {
+    if(categoryKey==-2){
+      emit(ShopInitial(
+        listMerchItems: ShopItemRepository().listShopItems.where((x)=>x.categoryKey.contains(1)).take(pageSize).toList(),
+        listMemorabiliaItems: ShopItemRepository().listShopItems.where((x)=>!x.categoryKey.contains(1)).toList(),
+        index: 1,
+        totalIndexes: (ShopItemRepository().listShopItems.length/pageSize).ceil(),
+        listItemCategory: ItemCategoryRepository().listCategories,
+      ));
+      return;
+    }
     ShopItemRepository().listShopItems.sort(
         (a,b) {
           if(sortBy==SortBy.None){
@@ -55,7 +65,7 @@ class ShopCubit extends Cubit<ShopState> {
       listMerchItems: retVal,
       listMemorabiliaItems: categoryKey==-1 ? ShopItemRepository().listShopItems.where((x)=>!x.categoryKey.contains(1)).toList() : [],
       index: pageIndex,
-      totalIndexes: (retVal.length/pageSize).ceil(),
+      totalIndexes: (ShopItemRepository().listShopItems.length/pageSize).ceil(),
       listItemCategory: ItemCategoryRepository().listCategories,
       categoryKey: categoryKey,
       orderBy: sortBy

@@ -60,7 +60,14 @@ class _RecentsWidgetState extends State<RecentsWidget> {
                         }).toList(),
                         options: ExpandableCarouselOptions(
                           controller: _controller,
-                          showIndicator: false,
+                          showIndicator: size.maxWidth<=900,
+                          indicatorMargin: size.maxWidth<=900 ? 10 : 8.0,
+                          slideIndicator: size.maxWidth<=900 ? CircularWaveSlideIndicator(
+                            slideIndicatorOptions: SlideIndicatorOptions(
+                              indicatorBackgroundColor: CustomColors.accentPink,
+                              currentIndicatorColor: CustomColors.primaryPink,
+                            )
+                          ) : null,
                           aspectRatio: 4/5,
                           viewportFraction: size.maxWidth > 900 ? 1/3 : 1/2,
                           padEnds: false,

@@ -14,6 +14,7 @@ class ItemCategoryRepository {
   //#endregion
 
   static Future init({List<ItemCategory>? listCategories}) async {
+    ItemCategoryRepository().listCategories.add(ItemCategory(key: -2, description: "Select"));
     ItemCategoryRepository().listCategories.add(ItemCategory(key: -1, description: "None"));
     ItemCategoryRepository().listCategories.add(ItemCategory(key: 0, description: "Memorobillia"));
     ItemCategoryRepository().listCategories.add(ItemCategory(key: 1, description: "Merch"));
