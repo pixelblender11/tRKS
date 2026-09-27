@@ -13,7 +13,9 @@ class ProductCubit extends Cubit<ProductState> {
       ShopItemRepository().listCart.firstWhere((x)=>x.pKey==item.pKey).qty+=quantity;
     }
     else{
-      ShopItemRepository().listCart.add(item);
+      for(int i=0;i<quantity;i++){
+        ShopItemRepository().listCart.add(item);
+      }
     }
     ShopItemRepository().listCartVN.value=ShopItemRepository().listCart.toList();
   }
