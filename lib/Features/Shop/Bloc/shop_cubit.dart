@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
@@ -22,7 +24,8 @@ class ShopCubit extends Cubit<ShopState> {
       )
   );
 
-  Future onSearchOrFilter(String searchText, int categoryKey,SortBy sortBy) async {
+  Future onSearchOrFilter(String searchText, int categoryKey,SortBy sortBy,{int pageNextIndex=1}) async {
+    //If the category key is -2, then we're doing a 'preview' page / initial state. This will simply display Merch and Memorobelia at the same time.
     if(categoryKey==-2){
       emit(ShopInitial(
         listMerchItems: ShopItemRepository().listShopItems.where((x)=>x.categoryKey.contains(1)).take(pageSize).toList(),
@@ -52,20 +55,27 @@ class ShopCubit extends Cubit<ShopState> {
           }
         }
       );
+    //Get the page for the cieling and floor (this will be replaced with a network call).
     var retVal=ShopItemRepository().listShopItems
       .where(
         (x) {
           return (x.categoryKey.contains(categoryKey) || categoryKey==-1)
               && (x.title.toLowerCase().contains(searchText.toLowerCase()) || searchText.isEmpty);
         }
-      )
-      .take(pageSize*pageIndex)
+      );
+    //Cap the cieling and floor
+    int index=max(1,pageNextIndex);
+    int totalPages=(retVal.length/pageSize).ceil();
+    index=min(index,totalPages);
+    retVal=retVal.skip(max(0,index-1)*pageSize)
+      .take(pageSize)
       .toList();
+    //Display filtered page on the given index.
     emit(ShopInitial(
-      listMerchItems: retVal,
+      listMerchItems: retVal.toList(),
       listMemorabiliaItems: categoryKey==-1 ? ShopItemRepository().listShopItems.where((x)=>!x.categoryKey.contains(1)).toList() : [],
-      index: pageIndex,
-      totalIndexes: (ShopItemRepository().listShopItems.length/pageSize).ceil(),
+      index: index,
+      totalIndexes: totalPages,
       listItemCategory: ItemCategoryRepository().listCategories,
       categoryKey: categoryKey,
       orderBy: sortBy

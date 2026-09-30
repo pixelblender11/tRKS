@@ -24,7 +24,7 @@ class ShopItemRepository extends RepositoryBase {
   //#endregion
 
   Future init({List<ShopItem>? listShopItems, List<ShopItem>? listCard}) async {
-    for(int y=0;y<100;y++){
+    for(int y=0;y<300;y++){
       ShopItem item=ShopItem.getDummy(isMerch: (y%2)==1);
       while(ShopItemRepository().listShopItems.any((x)=>x.pKey==item.pKey)){
         item=ShopItem.getDummy(isMerch: (y%2)==1);

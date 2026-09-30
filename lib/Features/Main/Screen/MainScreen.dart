@@ -30,6 +30,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin {
   late final TabController tabController;
   late final TextEditingController searchBarController;
+  final ScrollController shopWidgetScrollController=ScrollController();
   final ValueNotifier<int> index=ValueNotifier(0);
   final GlobalKey<ScaffoldState> _scaffoldKey=GlobalKey<ScaffoldState>();
 
@@ -270,6 +271,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                          ),
                        ),
                        SingleChildScrollView(
+                         controller: shopWidgetScrollController,
                          child: Center(
                            child: Container(
                              padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
@@ -277,6 +279,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                                  maxWidth: 1200
                              ),
                              child: ShopWidget(
+                               scrollController: shopWidgetScrollController,
                                searchBarController:searchBarController,
                                cubit: BlocProvider.of<ShopCubit>(context),
                              ),

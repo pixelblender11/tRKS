@@ -31,8 +31,11 @@ final GoRouter router = GoRouter(
           path: '/product/:id',
           builder: (BuildContext context, GoRouterState state) {
             int key=int.parse(state.pathParameters['id']!);
-            ShopItem item=ShopItemRepository().listShopItems.firstWhere((x)=>x.pKey==key);
-            return ProductScreen(shopItem: item);
+            if(ShopItemRepository().listShopItems.any((x)=>x.pKey==key)){
+              ShopItem item=ShopItemRepository().listShopItems.firstWhere((x)=>x.pKey==key);
+              return ProductScreen(shopItem: item);
+            }
+            return MainPage(title: "",searchText: "");
           },
           onExit: (BuildContext context, GoRouterState state) async {
             List<ShopItem> retVal=[];

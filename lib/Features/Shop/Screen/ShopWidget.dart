@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trks/Features/Features.dart';
@@ -10,8 +12,9 @@ import '../../../Models/Models.dart';
 class ShopWidget extends StatefulWidget {
   final TextEditingController searchBarController;
   final ShopCubit cubit;
+  final ScrollController scrollController;
 
-  const ShopWidget({super.key, required this.cubit, required this.searchBarController});
+  const ShopWidget({super.key, required this.cubit, required this.searchBarController, required this.scrollController});
 
   @override
   State<ShopWidget> createState() => _ShopWidgetState();
@@ -284,42 +287,205 @@ class _ShopWidgetState extends State<ShopWidget> {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 25,
+      spacing: 0,
       children: [
-        InkWell(
-          onTap: () {
-
+        if(state.index > 1)
+          InkWell(
+          onTap: () async {
+            await BlocProvider.of<ShopCubit>(context).onSearchOrFilter(
+                widget.searchBarController.text,
+                (BlocProvider.of<ShopCubit>(context).state as ShopInitial).categoryKey,
+                (BlocProvider.of<ShopCubit>(context).state as ShopInitial).orderBy,
+                pageNextIndex: state.index-1
+            );
+            //Scroll to the top after navigation
+            widget.scrollController.animateTo(0.0, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
           },
-          child: Text(
-              "<- Prev",
-              style: TextStyle(color: CustomColors.accentPink)
+          child: SizedBox(
+            width: 50,
+            height: 50,
+            child: Center(
+              child: Icon(
+                Icons.keyboard_arrow_left_outlined,
+                color: CustomColors.accentPink,
+              ),
+            ),
           ),
         ),
         ...getIndexes(context,state),
-        InkWell(
-          onTap: () {
-
-          },
-          child: Text(
-              "Next ->",
-              style: TextStyle(color: CustomColors.accentPink)
+        if(state.index < state.totalIndexes)
+          InkWell(
+            onTap: () async {
+              await BlocProvider.of<ShopCubit>(context).onSearchOrFilter(
+                  widget.searchBarController.text,
+                  (BlocProvider.of<ShopCubit>(context).state as ShopInitial).categoryKey,
+                  (BlocProvider.of<ShopCubit>(context).state as ShopInitial).orderBy,
+                  pageNextIndex: state.index+1
+              );
+              //Scroll to the top after navigation
+              widget.scrollController.animateTo(0.0, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
+            },
+            child: SizedBox(
+              width: 50,
+              height: 50,
+              child: Center(
+                child: Icon(
+                    Icons.keyboard_arrow_right_outlined,
+                    color: CustomColors.accentPink,
+                ),
+              ),
+            ),
           ),
-        ),
       ],
     );
   }
 
   List<Widget> getIndexes(BuildContext context, ShopInitial state){
     List<Widget> retVal=[];
-    for(int i=0; i<state.totalIndexes;i++){
-      retVal.add(
-        InkWell(
-          child: Text(
-            i.toString(),
-            style: TextStyle(color: CustomColors.accentPink),
-          ),
-        )
-      );
+    if(state.totalIndexes>7){
+      //Get all of the relevant indexes for cutting off pages
+      int windowSize=5-1; //0 indexed. Subtract 1.
+      int prevBuffer=2; //Number of previous items that can be clicked.
+      int startIndex=state.totalIndexes-state.index > windowSize - prevBuffer ? max(state.index-prevBuffer,1) : state.totalIndexes-windowSize;
+      int upperBound=startIndex+windowSize;
+      for(int i=startIndex; i<=upperBound;i++){
+        if(i==state.index){ //Special styling for selected index
+          retVal.add(
+              InkWell(
+                onTap: () async {
+                  await BlocProvider.of<ShopCubit>(context).onSearchOrFilter(
+                      widget.searchBarController.text,
+                      (BlocProvider.of<ShopCubit>(context).state as ShopInitial).categoryKey,
+                      (BlocProvider.of<ShopCubit>(context).state as ShopInitial).orderBy,
+                      pageNextIndex: i
+                  );
+                  //Scroll to the top after navigation
+                  widget.scrollController.animateTo(0.0, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
+                },
+                child: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: Center(
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: CustomColors.accentPink, // Underline color
+                              width: 1.5,         // Underline thickness
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          i.toString(),
+                          style: TextStyle(
+                            color: CustomColors.accentPink,
+                            fontWeight:i==state.index ? FontWeight.bold  : null, //Bold the current page
+                          ),
+                        ),
+                      )
+                  ),
+                ),
+              )
+          );
+          continue;
+        }
+        retVal.add(
+            InkWell(
+              onTap: () async {
+                await BlocProvider.of<ShopCubit>(context).onSearchOrFilter(
+                    widget.searchBarController.text,
+                    (BlocProvider.of<ShopCubit>(context).state as ShopInitial).categoryKey,
+                    (BlocProvider.of<ShopCubit>(context).state as ShopInitial).orderBy,
+                    pageNextIndex: i
+                );
+                //Scroll to the top after navigation
+                widget.scrollController.animateTo(0.0, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
+              },
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: Center(
+                  child: Text(
+                    i.toString(),
+                    style: TextStyle(
+                      color: CustomColors.accentPink,
+                    ),
+                  ),
+                ),
+              ),
+            )
+        );
+      }
+    }
+    else {
+      for(int i=1; i<state.totalIndexes;i++){
+        if(i==state.index){ //Special styling for selected index
+          retVal.add(
+              InkWell(
+                onTap: () async {
+                  await BlocProvider.of<ShopCubit>(context).onSearchOrFilter(
+                      widget.searchBarController.text,
+                      (BlocProvider.of<ShopCubit>(context).state as ShopInitial).categoryKey,
+                      (BlocProvider.of<ShopCubit>(context).state as ShopInitial).orderBy,
+                      pageNextIndex: i
+                  );
+                  //Scroll to the top after navigation
+                  widget.scrollController.animateTo(0.0, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
+                },
+                child: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: Center(
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: CustomColors.accentPink, // Underline color
+                              width: 1.5,         // Underline thickness
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          i.toString(),
+                          style: TextStyle(
+                            color: CustomColors.accentPink,
+                            fontWeight:i==state.index ? FontWeight.bold  : null, //Bold the current page
+                          ),
+                        ),
+                      )
+                  ),
+                ),
+              )
+          );
+          continue;
+        }
+        retVal.add(
+            InkWell(
+              onTap: () async {
+                await BlocProvider.of<ShopCubit>(context).onSearchOrFilter(
+                    widget.searchBarController.text,
+                    (BlocProvider.of<ShopCubit>(context).state as ShopInitial).categoryKey,
+                    (BlocProvider.of<ShopCubit>(context).state as ShopInitial).orderBy,
+                    pageNextIndex: i
+                );
+                //Scroll to the top after navigation
+                widget.scrollController.animateTo(0.0, duration: const Duration(milliseconds: 100), curve: Curves.easeInOut);
+              },
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: Center(
+                  child: Text(
+                    i.toString(),
+                    style: TextStyle(
+                      color: CustomColors.accentPink,
+                    ),
+                  ),
+                ),
+              ),
+            )
+        );
+      }
     }
     return retVal;
   }
